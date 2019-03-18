@@ -26,6 +26,8 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	
 	//Create VBOs
 	CreateVertexBufferObjects();
+	//GenQuadsVBO(300);
+	CreateGridMesh();
 }
 
 void Renderer::CreateVertexBufferObjects()
@@ -33,13 +35,136 @@ void Renderer::CreateVertexBufferObjects()
 	float rect[]
 		=
 	{
-		-0.5, -0.5, 0.f, -0.5, 0.5, 0.f, 0.5, 0.5, 0.f, //Triangle1
-		-0.5, -0.5, 0.f,  0.5, 0.5, 0.f, 0.5, -0.5, 0.f, //Triangle2
-	};
+	//	-0.5, -0.5, 0.f, -0.5, 0.5, 0.f, 0.5, 0.5, 0.f, //Triangle1
+	//	-0.5, -0.5, 0.f,  0.5, 0.5, 0.f, 0.5, -0.5, 0.f, //Triangle2
+		0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 0.f,
+	}; // ARRAY 형태로 만들었당
 
-	glGenBuffers(1, &m_VBORect);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW);
+
+	glGenBuffers(1, &m_VBORect); 	// 3개의 버텍스를 GPU에 옮기기 위해서는 ID를 부여해야함~ // ID, ID를 가질 버퍼
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect); // GL_ARRAY_BUFFER 말고도 다른것도 많지만 우린 ARRAY형태로 데이터를 만들었으니 ARRAY다! // 타겟, ID
+	glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW); // 버퍼에 데이터를 올리기 전에 꼭 BindBuffer 하기~~!
+
+	// 여기까지 끝나면 m_VBORect가 GPU에 올라가게 된다~~ rect안쓰고 m_VBORect를 쓰면 댐~~
+}
+
+void Renderer::GenQuadsVBO(int count)
+{
+	float randX, randY;
+	float size = 0.01f;
+	float arraySize = count * 3 * 6;
+	float *vertices = new float[arraySize];
+
+	for (int i = 0; i < count; ++i) {
+		int index = i * 10;
+		randX = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
+		randY = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
+
+		vertices[index] = randX - size; ++index;
+		vertices[index] = randY - size; ++index;
+		vertices[index] = 0.f; ++index;
+		vertices[index] = randX - size; ++index;
+		vertices[index] = randY + size; ++index;
+		vertices[index] = 0.f; ++index;
+		vertices[index] = randX + size; ++index;
+		vertices[index] = randY + size; ++index;
+		vertices[index] = 0.f; ++index;
+
+		vertices[index] = randX - size; ++index;
+		vertices[index] = randY - size; ++index;
+		vertices[index] = 0.f; ++index;
+		vertices[index] = randX + size; ++index;
+		vertices[index] = randY + size; ++index;
+		vertices[index] = 0.f; ++index;
+		vertices[index] = randX + size; ++index;
+		vertices[index] = randY - size; ++index;
+		vertices[index] = 0.f; ++index;
+	}
+
+	glGenBuffers(1, &m_VBOQuads);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOQuads);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*arraySize, vertices, GL_STATIC_DRAW);
+	m_VBOQuads_vertexCount = 6 * count;
+}
+
+void Renderer::CreateGridMesh()
+{
+	float basePosX = -0.5f;
+	float basePosY = -0.5f;
+	float targetPosX = 0.5f;
+	float targetPosY = 0.5f;
+
+	int pointCountX = 32;
+	int pointCountY = 32;
+
+	float width = targetPosX - basePosX;
+	float height = targetPosY - basePosY;
+
+	float* point = new float[pointCountX*pointCountY * 2];
+	float* vertices = new float[(pointCountX - 1)*(pointCountY - 1) * 2 * 3 * 3];
+	m_VBOGridMesh_Count = (pointCountX - 1)*(pointCountY - 1) * 2 * 3;
+
+	//Prepare points
+	for (int x = 0; x < pointCountX; x++)
+	{
+		for (int y = 0; y < pointCountY; y++)
+		{
+			point[(y*pointCountX + x) * 2 + 0] = basePosX + width * (x / (float)(pointCountX - 1));
+			point[(y*pointCountX + x) * 2 + 1] = basePosY + height * (y / (float)(pointCountY - 1));
+		}
+	}
+
+	//Make triangles
+	int vertIndex = 0;
+	for (int x = 0; x < pointCountX - 1; x++)
+	{
+		for (int y = 0; y < pointCountY - 1; y++)
+		{
+			//Triangle part 1
+			vertices[vertIndex] = point[(y*pointCountX + x) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[(y*pointCountX + x) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1)*pointCountX + (x + 1)) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1)*pointCountX + (x + 1)) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1)*pointCountX + x) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1)*pointCountX + x) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+
+			//Triangle part 2
+			vertices[vertIndex] = point[(y*pointCountX + x) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[(y*pointCountX + x) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+			vertices[vertIndex] = point[(y*pointCountX + (x + 1)) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[(y*pointCountX + (x + 1)) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1)*pointCountX + (x + 1)) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1)*pointCountX + (x + 1)) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+		}
+	}
+
+	glGenBuffers(1, &m_VBOGridMesh);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOGridMesh);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*(pointCountX - 1)*(pointCountY - 1) * 2 * 3 * 3, vertices, GL_STATIC_DRAW);
 }
 
 void Renderer::AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType)
@@ -275,8 +400,38 @@ void Renderer::Test()
 	glEnableVertexAttribArray(attribPosition);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	// 얘는 ARRAY버퍼(m_VBORect)에 올린 그 내용물을 3개씩 끊어서 하나의 버텍스를 구성함
+	// sizeof(float) * 3 = stride인데 이게 뭐냐면 다음꺼 읽으려면 얼만큼 떨어진거 읽어~ 라고 알려주는 거임
+	// 읽을 크기 = 3, 읽을 시점 = sizeof(float) * 3
+	// 읽을 시점이 왜 필요하냐?? 이거 x, y, z 읽고 바로 다음이 x가 아닐수도 있기 때문임! u, v같은 텍스쳐 좌표 등이 있을수도 있어서 그렇다!
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+	// 버텍스 6개를 그려라...!
+	// 버텍스 1개당 3개의 포인트가 필요하니까 총 6 * 3 = 18개의 float point가 필요하게 된다~
 
 	glDisableVertexAttribArray(attribPosition);
+}
+
+void Renderer::Lecture2() {
+	glUseProgram(m_SolidRectShader);
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOQuads);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, m_VBOQuads_vertexCount);
+
+	glDisableVertexAttribArray(0);
+}
+
+void Renderer::Lecture3() {
+	glUseProgram(m_SolidRectShader);
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOGridMesh);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+	glDrawArrays(GL_LINES, 0, m_VBOGridMesh_Count);
+
+	glDisableVertexAttribArray(0);
 }

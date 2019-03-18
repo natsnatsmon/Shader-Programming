@@ -26,7 +26,8 @@ void RenderScene(void)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Renderer Test
-	g_Renderer->Test();
+	g_Renderer->Lecture2();
+
 
 	glutSwapBuffers();
 }
@@ -56,7 +57,7 @@ int main(int argc, char **argv)
 	// Initialize GL things
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(0, 0);
+	glutInitWindowPosition(150, 150);
 	glutInitWindowSize(g_WindowSizeX, g_WindowSizeY);
 	glutCreateWindow("GLSL KPU");
 
