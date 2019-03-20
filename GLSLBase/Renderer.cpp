@@ -32,17 +32,18 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 
 void Renderer::CreateVertexBufferObjects()
 {
+	float size = 0.05f;
 	float rect[]
 		=
 	{
 		// x, y, z, w
-		-0.5, -0.5, 0.f, 0.5f, 
-		-0.5, 0.5, 0.f, 0.5f, 
-		0.5, 0.5, 0.f, 0.5f //Triangle1
+		-size, -size, 0.f, 0.5f,
+		-size, size, 0.f, 0.5f,
+		size, size, 0.f, 0.5f //Triangle1
 		
-		-0.5, -0.5, 0.f, 0.5f,
-		0.5, 0.5, 0.f, 0.5f,
-		0.5, -0.5, 0.f, 0.5f,//Triangle2
+		-size, -size, 0.f, 0.5f,
+		size, size, 0.f, 0.5f,
+		size, -size, 0.f, 0.5f,//Triangle2
 
 //		0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 0.f,
 	}; // ARRAY 형태로 만들었당
@@ -421,21 +422,25 @@ GLuint Renderer::CreateBmpTexture(char * filePath)
 	return temp;
 }
 
+float time = 0.f;
 void Renderer::Test()
 {
 	glUseProgram(m_SolidRectShader);
 
-	float randN = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
+	time += .1f;
+	if (time > 1.0f) {
+		time = 0.f;
+	}
 	GLuint uTime = glGetUniformLocation(m_SolidRectShader, "u_Time");
-	glUniform1f(uTime, randN);
+	glUniform1f(uTime, time);
 
 	GLuint aPos = glGetAttribLocation(m_SolidRectShader, "a_Position");
 	GLuint aCol = glGetAttribLocation(m_SolidRectShader, "a_Color");
 
 //	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
-	glEnableVertexAttribArray(aPos);
+	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
-	glVertexAttribPointer(aPos, 4, GL_FLOAT, GL_FALSE, sizeof(float)*4, 0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(float)*4, 0);
 	// 얘는 ARRAY버퍼(m_VBORect)에 올린 그 내용물을 3개씩 끊어서 하나의 버텍스를 구성함
 	// sizeof(float) * 3 = stride인데 이게 뭐냐면 다음꺼 읽으려면 얼만큼 떨어진거 읽어~ 라고 알려주는 거임
 	// 읽을 크기 = 3, 읽을 시점 = sizeof(float) * 3
@@ -449,7 +454,7 @@ void Renderer::Test()
 	// 버텍스 6개를 그려라...!
 	// 버텍스 1개당 3개의 포인트가 필요하니까 총 6 * 3 = 18개의 float point가 필요하게 된다~
 
-	glDisableVertexAttribArray(aPos);
+	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 
 }
