@@ -35,9 +35,16 @@ void Renderer::CreateVertexBufferObjects()
 	float rect[]
 		=
 	{
-	//	-0.5, -0.5, 0.f, -0.5, 0.5, 0.f, 0.5, 0.5, 0.f, //Triangle1
-	//	-0.5, -0.5, 0.f,  0.5, 0.5, 0.f, 0.5, -0.5, 0.f, //Triangle2
-		0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 0.f,
+		// x, y, z, w
+		-0.5, -0.5, 0.f, 0.5f, 
+		-0.5, 0.5, 0.f, 0.5f, 
+		0.5, 0.5, 0.f, 0.5f //Triangle1
+		
+		-0.5, -0.5, 0.f, 0.5f,
+		0.5, 0.5, 0.f, 0.5f,
+		0.5, -0.5, 0.f, 0.5f,//Triangle2
+
+//		0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 0.f,
 	}; // ARRAY 형태로 만들었당
 
 
@@ -46,6 +53,28 @@ void Renderer::CreateVertexBufferObjects()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW); // 버퍼에 데이터를 올리기 전에 꼭 BindBuffer 하기~~!
 
 	// 여기까지 끝나면 m_VBORect가 GPU에 올라가게 된다~~ rect안쓰고 m_VBORect를 쓰면 댐~~
+
+	float rectColor[]
+		=
+	{
+		// r, g, b, a
+		1.f, 0.f, 0.f, 1.f,
+		0.5f, 0.5, 0.f, 1.f,
+		1.f, 0.5, 0.f, 1.f, //Triangle1
+
+		1.f, 0.f, 0.f, 1.f,
+		0.5, 0.5, 0.f, 1.f,
+		0.5, 0.3f, 0.f, 1.f,//Triangle2
+
+//		0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 0.f,
+	}; // ARRAY 형태로 만들었당
+
+
+	glGenBuffers(1, &m_VBORectColor); 	// 3개의 버텍스를 GPU에 옮기기 위해서는 ID를 부여해야함~ // ID, ID를 가질 버퍼
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORectColor); // GL_ARRAY_BUFFER 말고도 다른것도 많지만 우린 ARRAY형태로 데이터를 만들었으니 ARRAY다! // 타겟, ID
+	glBufferData(GL_ARRAY_BUFFER, sizeof(rectColor), rectColor, GL_STATIC_DRAW); // 버퍼에 데이터를 올리기 전에 꼭 BindBuffer 하기~~!
+
+
 }
 
 void Renderer::GenQuadsVBO(int count)
@@ -396,20 +425,33 @@ void Renderer::Test()
 {
 	glUseProgram(m_SolidRectShader);
 
-	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
-	glEnableVertexAttribArray(attribPosition);
+	float randN = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
+	GLuint uTime = glGetUniformLocation(m_SolidRectShader, "u_Time");
+	glUniform1f(uTime, randN);
+
+	GLuint aPos = glGetAttribLocation(m_SolidRectShader, "a_Position");
+	GLuint aCol = glGetAttribLocation(m_SolidRectShader, "a_Color");
+
+//	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
+	glEnableVertexAttribArray(aPos);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
-	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	glVertexAttribPointer(aPos, 4, GL_FLOAT, GL_FALSE, sizeof(float)*4, 0);
 	// 얘는 ARRAY버퍼(m_VBORect)에 올린 그 내용물을 3개씩 끊어서 하나의 버텍스를 구성함
 	// sizeof(float) * 3 = stride인데 이게 뭐냐면 다음꺼 읽으려면 얼만큼 떨어진거 읽어~ 라고 알려주는 거임
 	// 읽을 크기 = 3, 읽을 시점 = sizeof(float) * 3
 	// 읽을 시점이 왜 필요하냐?? 이거 x, y, z 읽고 바로 다음이 x가 아닐수도 있기 때문임! u, v같은 텍스쳐 좌표 등이 있을수도 있어서 그렇다!
 
+	glEnableVertexAttribArray(aCol);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORectColor);
+	glVertexAttribPointer(aCol, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
+
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	// 버텍스 6개를 그려라...!
 	// 버텍스 1개당 3개의 포인트가 필요하니까 총 6 * 3 = 18개의 float point가 필요하게 된다~
 
-	glDisableVertexAttribArray(attribPosition);
+	glDisableVertexAttribArray(aPos);
+	glDisableVertexAttribArray(1);
+
 }
 
 void Renderer::Lecture2() {

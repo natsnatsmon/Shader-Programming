@@ -8,3 +8,10 @@ fs = fragment shader
 - *  - * - * -
 
 reference card...
+
+- *  - * - * -
+
+in의 의미 : 입력으로 받는 놈이다!
+vec3 형태(x, y, z)의 a_Position을 받는구나~
+
+요놈이 Attrib 0번이다.

@@ -49,5 +49,8 @@ private:
 
 	GLuint m_VBOGridMesh = 0;
 	int m_VBOGridMesh_Count = 0;
+
+	GLuint m_VBORectColor = 0;
+
 };
 
