@@ -23,9 +23,12 @@ public:
 	void Test();
 	void Lecture2();
 	void Lecture3();
+	void Lecture4();
+
 
 	void GenQuadsVBO(int count);
 	void CreateGridMesh();
+
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -41,8 +44,7 @@ private:
 	unsigned int m_WindowSizeY = 0;
 
 	GLuint m_VBORect = 0;
-	GLuint m_SolidRectShader = 0;
-
+	
 	GLuint m_VBOLecture = 0;
 	GLuint m_VBOQuads = 0;
 	int m_VBOQuads_vertexCount = 0;
@@ -52,5 +54,8 @@ private:
 
 	GLuint m_VBORectColor = 0;
 
+	// Shaders
+	GLuint m_SolidRectShader = 0;
+	GLuint m_SimpleVelShader = 0;
 };
 

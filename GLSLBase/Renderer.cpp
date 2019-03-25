@@ -23,9 +23,11 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 
 	//Load shaders
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
+	m_SimpleVelShader = CompileShaders("./Shaders/SimpleVel.vs", "./Shaders/SimpleVel.fs");
 	
 	//Create VBOs
 	CreateVertexBufferObjects();
+	GenQuadsVBO(300);
 	//GenQuadsVBO(300);
 	CreateGridMesh();
 }
@@ -81,40 +83,68 @@ void Renderer::CreateVertexBufferObjects()
 void Renderer::GenQuadsVBO(int count)
 {
 	float randX, randY;
+	float randVX, randVY, randVZ;
 	float size = 0.01f;
-	float arraySize = count * 3 * 6;
+	float arraySize = count * 6 * 6;
 	float *vertices = new float[arraySize];
 
 	for (int i = 0; i < count; ++i) {
-		int index = i * 10;
+		int index = i * 36;
 		randX = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
 		randY = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
 
-		vertices[index] = randX - size; ++index;
-		vertices[index] = randY - size; ++index;
-		vertices[index] = 0.f; ++index;
+		randVX = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
+		randVY = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
+		randVZ = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
+
+
+		vertices[index] = randX - size; ++index; // x
+		vertices[index] = randY - size; ++index; // y
+		vertices[index] = 0.f; ++index;          // z
+		vertices[index] = randVX; ++index;        // x방향
+		vertices[index] = randVY; ++index;        // y방향
+		vertices[index] = 0.f; ++index;          // z방향
+
 		vertices[index] = randX - size; ++index;
 		vertices[index] = randY + size; ++index;
 		vertices[index] = 0.f; ++index;
+		vertices[index] = randVX; ++index;
+		vertices[index] = randVY; ++index;
+		vertices[index] = 0.f; ++index;
+
 		vertices[index] = randX + size; ++index;
 		vertices[index] = randY + size; ++index;
+		vertices[index] = 0.f; ++index;
+		vertices[index] = randVX; ++index;
+		vertices[index] = randVY; ++index;
 		vertices[index] = 0.f; ++index;
 
 		vertices[index] = randX - size; ++index;
 		vertices[index] = randY - size; ++index;
 		vertices[index] = 0.f; ++index;
-		vertices[index] = randX + size; ++index;
-		vertices[index] = randY + size; ++index;
+		vertices[index] = randVX; ++index;
+		vertices[index] = randVY; ++index;
 		vertices[index] = 0.f; ++index;
+
 		vertices[index] = randX + size; ++index;
 		vertices[index] = randY - size; ++index;
 		vertices[index] = 0.f; ++index;
+		vertices[index] = randVX; ++index;
+		vertices[index] = randVY; ++index;
+		vertices[index] = 0.f; ++index;
+
+		vertices[index] = randX + size; ++index;
+		vertices[index] = randY + size; ++index;
+		vertices[index] = 0.f; ++index;
+		vertices[index] = randVX; ++index;
+		vertices[index] = randVY; ++index;
+		vertices[index] = 0.f;
 	}
 
 	glGenBuffers(1, &m_VBOQuads);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOQuads);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*arraySize, vertices, GL_STATIC_DRAW);
-	m_VBOQuads_vertexCount = 6 * count;
+	m_VBOQuads_vertexCount = 12 * count;
 }
 
 void Renderer::CreateGridMesh()
@@ -479,6 +509,37 @@ void Renderer::Lecture3() {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
 	glDrawArrays(GL_LINES, 0, m_VBOGridMesh_Count);
+
+	glDisableVertexAttribArray(0);
+}
+
+float time_lec4 = 0.f;
+float velx, vely, velz;
+void Renderer::Lecture4() {
+	glUseProgram(m_SimpleVelShader);
+
+	time_lec4 += 0.0001f;
+	//if (time_lec4 > 1) {
+	//	time_lec4 = 0.f;
+	//}
+
+	GLuint uTime = glGetUniformLocation(m_SimpleVelShader, "u_Time");
+	glUniform1f(uTime, time_lec4);
+
+
+	GLuint aPos = glGetAttribLocation(m_SimpleVelShader, "a_Position");
+	GLuint aVel = glGetAttribLocation(m_SimpleVelShader, "a_Velocity");
+
+	glEnableVertexAttribArray(aPos);
+	glEnableVertexAttribArray(aVel);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOQuads);
+
+	// Shader파일에 내 변수들을 보내주는 역할!!!!!! 드디어 이해함
+	glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+	glVertexAttribPointer(aVel, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (GLvoid*)(sizeof(float) * 3)); // 시작지점을 밀어줘야겠죵? 맨 끝에 GLvoid해서 하면 댄다
+
+	glDrawArrays(GL_TRIANGLES, 0, m_VBOQuads_vertexCount);
 
 	glDisableVertexAttribArray(0);
 }
