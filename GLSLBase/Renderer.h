@@ -24,6 +24,7 @@ public:
 	void Lecture2();
 	void Lecture3();
 	void Lecture4();
+	void Lecture5();
 
 
 	void GenQuadsVBO(int count);
