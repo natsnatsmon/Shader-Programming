@@ -28,7 +28,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	
 	//Create VBOs
 	CreateVertexBufferObjects();
-	GenQuadsVBO(100);
+	GenQuadsVBO(1000000);
 //	CreateGridMesh();
 }
 
@@ -82,10 +82,10 @@ void Renderer::CreateVertexBufferObjects()
 
 void Renderer::GenQuadsVBO(int count)
 {
-	float quadSize = 0.01f;
+	float quadSize = 0.001f;
 
 	int verticesPerQuad = 6;
-	int floatsPerVertex = 10;
+	int floatsPerVertex = 3 + 3 + 2 + 2 + 1; // x, y, z, vx, vy, vz, s, l, r, a, randValue
 	int arraySize = count * floatsPerVertex * verticesPerQuad;
 
 	float *vertices = new float[arraySize];
@@ -100,6 +100,8 @@ void Renderer::GenQuadsVBO(int count)
 		float ratioThres = 4.f;
 		float ampMin = -0.1f;
 		float ampThres = 0.2;
+		float randVal = 0.f;
+		float randThres = 1.f;
 
 		int index = i * verticesPerQuad * floatsPerVertex;
 
@@ -118,6 +120,8 @@ void Renderer::GenQuadsVBO(int count)
 		
 		ratio = ratioMin + ((float)rand() / (float)RAND_MAX * ratioThres);
 		amp = ampMin + ((float)rand() / (float)RAND_MAX * ampThres);
+		
+		randVal = randVal + ((float)rand() / (float)(RAND_MAX) * randThres);
 
 		vertices[index] = randX - quadSize; ++index; // x
 		vertices[index] = randY - quadSize; ++index; // y
@@ -129,6 +133,7 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = randLT; ++index;        
 		vertices[index] = ratio; ++index;
 		vertices[index] = amp; ++index;
+		vertices[index] = randVal; ++index;
 
 
 		vertices[index] = randX - quadSize; ++index;
@@ -141,6 +146,7 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = randLT; ++index;        
 		vertices[index] = ratio; ++index;
 		vertices[index] = amp; ++index;
+		vertices[index] = randVal; ++index;
 
 
 		vertices[index] = randX + quadSize; ++index;
@@ -153,6 +159,8 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = randLT; ++index;        
 		vertices[index] = ratio; ++index;
 		vertices[index] = amp; ++index;
+		vertices[index] = randVal; ++index;
+
 
 		vertices[index] = randX - quadSize; ++index;
 		vertices[index] = randY - quadSize; ++index;
@@ -164,6 +172,8 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = randLT; ++index;        
 		vertices[index] = ratio; ++index;
 		vertices[index] = amp; ++index;
+		vertices[index] = randVal; ++index;
+
 
 		vertices[index] = randX + quadSize; ++index;
 		vertices[index] = randY - quadSize; ++index;
@@ -175,6 +185,8 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = randLT; ++index;        
 		vertices[index] = ratio; ++index;
 		vertices[index] = amp; ++index;
+		vertices[index] = randVal; ++index;
+
 
 		vertices[index] = randX + quadSize; ++index;
 		vertices[index] = randY + quadSize; ++index;
@@ -185,14 +197,16 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = randST; ++index;        
 		vertices[index] = randLT; ++index;
 		vertices[index] = ratio; ++index;
-		vertices[index] = amp;
-
+		vertices[index] = amp; ++index;
+		vertices[index] = randVal; 
 	}
 
-	glGenBuffers(1, &m_VBOQuads);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOQuads);
+	glGenBuffers(1, &m_VBOQuads); // CPU가 GPU를 바로 ACCESS 못하니까 id 부여해주는거임
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOQuads); // ARRAY_BUFFER로 쓰겠다~
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*arraySize, vertices, GL_STATIC_DRAW);
 	m_VBOQuads_vertexCount = count * verticesPerQuad;
+
+	delete vertices;
 }
 
 void Renderer::CreateGridMesh()
@@ -639,18 +653,26 @@ void Renderer::Lecture6() {
 	GLuint aPos = glGetAttribLocation(shader, "a_Position");
 	GLuint aVel = glGetAttribLocation(shader, "a_Velocity");
 	GLuint aTime = glGetAttribLocation(shader, "a_Time");
+	GLuint aValue = glGetAttribLocation(shader, "a_Value");
 
 	glEnableVertexAttribArray(aPos);
 	glEnableVertexAttribArray(aVel);
 	glEnableVertexAttribArray(aTime);
+	glEnableVertexAttribArray(aValue);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOQuads);
 
 	// (0x, 1y, 2z, 3vx, 4vy, 5vz, 6st, 7lt, 8x, 9y ... )
-	glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 10, 0);
-	glVertexAttribPointer(aVel, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 10, (GLvoid*)(sizeof(float) * 3));
-	glVertexAttribPointer(aTime, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 10, (GLvoid*)(sizeof(float) * 6));
+	glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, 0);
+	glVertexAttribPointer(aVel, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (GLvoid*)(sizeof(float) * 3));
+	glVertexAttribPointer(aTime, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (GLvoid*)(sizeof(float) * 6));
+	glVertexAttribPointer(aValue, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (GLvoid*)(sizeof(float) * 10));
+
 	glDrawArrays(GL_TRIANGLES, 0, m_VBOQuads_vertexCount);
 
-	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(aPos);
+	glDisableVertexAttribArray(aVel);
+	glDisableVertexAttribArray(aTime);
+	glDisableVertexAttribArray(aValue);
+
 }
