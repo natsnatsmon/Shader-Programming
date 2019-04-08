@@ -28,7 +28,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	
 	//Create VBOs
 	CreateVertexBufferObjects();
-	GenQuadsVBO(1000000);
+	GenQuadsVBO(100);
 //	CreateGridMesh();
 }
 
@@ -82,10 +82,10 @@ void Renderer::CreateVertexBufferObjects()
 
 void Renderer::GenQuadsVBO(int count)
 {
-	float quadSize = 0.001f;
+	float quadSize = 0.05f;
 
 	int verticesPerQuad = 6;
-	int floatsPerVertex = 3 + 3 + 2 + 2 + 1; // x, y, z, vx, vy, vz, s, l, r, a, randValue
+	int floatsPerVertex = 3 + 3 + 2 + 2 + 1 + 4; // x, y, z, vx, vy, vz, s, l, r, a, randValue, R, G, B, A
 	int arraySize = count * floatsPerVertex * verticesPerQuad;
 
 	float *vertices = new float[arraySize];
@@ -94,7 +94,7 @@ void Renderer::GenQuadsVBO(int count)
 		float randX, randY;
 		float randVX, randVY, randVZ;
 		float randST, randLT; // emit(start) time, life time
-		float STMax = 5.f, LTMax = 2.f, LTMin = 1.f;
+		float STMax = 5.f, LTMax = 3.f, LTMin = 1.f;
 		float ratio, amp;
 		float ratioMin = 2.f;
 		float ratioThres = 4.f;
@@ -102,6 +102,7 @@ void Renderer::GenQuadsVBO(int count)
 		float ampThres = 0.2;
 		float randVal = 0.f;
 		float randThres = 1.f;
+		float randR, randG, randB, alpha;
 
 		int index = i * verticesPerQuad * floatsPerVertex;
 
@@ -123,6 +124,11 @@ void Renderer::GenQuadsVBO(int count)
 		
 		randVal = randVal + ((float)rand() / (float)(RAND_MAX) * randThres);
 
+		randR = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
+		randG = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
+		randB = 2.f * (((float)rand() / (float)RAND_MAX) - 0.5f);
+		alpha = 1.f;
+
 		vertices[index] = randX - quadSize; ++index; // x
 		vertices[index] = randY - quadSize; ++index; // y
 		vertices[index] = 0.f; ++index;          // z
@@ -134,6 +140,11 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = ratio; ++index;
 		vertices[index] = amp; ++index;
 		vertices[index] = randVal; ++index;
+		vertices[index] = randR; ++index;
+		vertices[index] = randG; ++index;
+		vertices[index] = randB; ++index;
+		vertices[index] = alpha; ++index;
+
 
 
 		vertices[index] = randX - quadSize; ++index;
@@ -147,6 +158,10 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = ratio; ++index;
 		vertices[index] = amp; ++index;
 		vertices[index] = randVal; ++index;
+		vertices[index] = randR; ++index;
+		vertices[index] = randG; ++index;
+		vertices[index] = randB; ++index;
+		vertices[index] = alpha; ++index;
 
 
 		vertices[index] = randX + quadSize; ++index;
@@ -160,6 +175,10 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = ratio; ++index;
 		vertices[index] = amp; ++index;
 		vertices[index] = randVal; ++index;
+		vertices[index] = randR; ++index;
+		vertices[index] = randG; ++index;
+		vertices[index] = randB; ++index;
+		vertices[index] = alpha; ++index;
 
 
 		vertices[index] = randX - quadSize; ++index;
@@ -173,6 +192,10 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = ratio; ++index;
 		vertices[index] = amp; ++index;
 		vertices[index] = randVal; ++index;
+		vertices[index] = randR; ++index;
+		vertices[index] = randG; ++index;
+		vertices[index] = randB; ++index;
+		vertices[index] = alpha; ++index;
 
 
 		vertices[index] = randX + quadSize; ++index;
@@ -186,6 +209,10 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = ratio; ++index;
 		vertices[index] = amp; ++index;
 		vertices[index] = randVal; ++index;
+		vertices[index] = randR; ++index;
+		vertices[index] = randG; ++index;
+		vertices[index] = randB; ++index;
+		vertices[index] = alpha; ++index;
 
 
 		vertices[index] = randX + quadSize; ++index;
@@ -198,7 +225,11 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = randLT; ++index;
 		vertices[index] = ratio; ++index;
 		vertices[index] = amp; ++index;
-		vertices[index] = randVal; 
+		vertices[index] = randVal; ++index;
+		vertices[index] = randR; ++index;
+		vertices[index] = randG; ++index;
+		vertices[index] = randB; ++index;
+		vertices[index] = alpha; 
 	}
 
 	glGenBuffers(1, &m_VBOQuads); // CPU가 GPU를 바로 ACCESS 못하니까 id 부여해주는거임
@@ -639,6 +670,12 @@ void Renderer::Lecture5() {
 
 float time_lec6 = 0.f;
 void Renderer::Lecture6() {
+	
+	// 알파 블렌딩을 켜는 API
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	
 	GLuint shader = m_Lecture6Shader;
 	glUseProgram(shader);
 
@@ -646,7 +683,7 @@ void Renderer::Lecture6() {
 	GLuint uTime = glGetUniformLocation(shader, "u_Time");
 	glUniform1f(uTime, time_lec4);
 	
-	time_lec4 += 0.0005f;
+	time_lec4 += 0.005f;
 
 
 
@@ -654,19 +691,22 @@ void Renderer::Lecture6() {
 	GLuint aVel = glGetAttribLocation(shader, "a_Velocity");
 	GLuint aTime = glGetAttribLocation(shader, "a_Time");
 	GLuint aValue = glGetAttribLocation(shader, "a_Value");
+	GLuint aColor = glGetAttribLocation(shader, "a_Color");
 
 	glEnableVertexAttribArray(aPos);
 	glEnableVertexAttribArray(aVel);
 	glEnableVertexAttribArray(aTime);
 	glEnableVertexAttribArray(aValue);
+	glEnableVertexAttribArray(aColor);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOQuads);
 
 	// (0x, 1y, 2z, 3vx, 4vy, 5vz, 6st, 7lt, 8x, 9y ... )
-	glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, 0);
-	glVertexAttribPointer(aVel, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (GLvoid*)(sizeof(float) * 3));
-	glVertexAttribPointer(aTime, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (GLvoid*)(sizeof(float) * 6));
-	glVertexAttribPointer(aValue, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 11, (GLvoid*)(sizeof(float) * 10));
+	glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 15, 0);
+	glVertexAttribPointer(aVel, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (GLvoid*)(sizeof(float) * 3));
+	glVertexAttribPointer(aTime, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (GLvoid*)(sizeof(float) * 6));
+	glVertexAttribPointer(aValue, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (GLvoid*)(sizeof(float) * 10));
+	glVertexAttribPointer(aColor, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (GLvoid*)(sizeof(float) * 11));
 
 	glDrawArrays(GL_TRIANGLES, 0, m_VBOQuads_vertexCount);
 
@@ -674,5 +714,5 @@ void Renderer::Lecture6() {
 	glDisableVertexAttribArray(aVel);
 	glDisableVertexAttribArray(aTime);
 	glDisableVertexAttribArray(aValue);
-
+	glDisableVertexAttribArray(aColor);
 }
