@@ -15,7 +15,9 @@ void main()
 	float distance = sqrt(v_Position.x * v_Position.x + v_Position.y * v_Position.y);
 
 
-	// UV
-	FragColor = vec4(v_UV.xy, 0, 1);
-	FragColor = vec4(v_Position.xy + vec2(0.5, 0.5), 0, 1); // 둘 다 같은 결과
-}
+	vec2 newUV = v_UV - vec2(0.5, 0.5);
+	float grey = sin(distance * 3.141592 * 4 * 4); // 거리, PI, ?, 주기
+
+	FragColor = vec4(grey);
+
+} 
