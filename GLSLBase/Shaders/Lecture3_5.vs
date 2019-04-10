@@ -43,7 +43,7 @@ void main()
 		newTime = mod(newTime, lifeTime);
 
 		newVel = newVel + c_Gravity * newTime; // 새로이 결정되는 속도
-		newPos = newPos + a_Velocity * newTime + 0.5 * c_Gravity * newTime;
+		//newPos = newPos + a_Velocity * newTime + 0.5 * c_Gravity * newTime;
 
 		vec3 vSin = a_Velocity * c_RParticle;
 

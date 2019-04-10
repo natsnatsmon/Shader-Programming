@@ -26,6 +26,7 @@ public:
 	void Lecture4();
 	void Lecture5();
 	void Lecture6();
+	void Lecture7();
 
 
 	void GenQuadsVBO(int count);
@@ -60,6 +61,7 @@ private:
 	GLuint m_SolidRectShader = 0;
 	GLuint m_SimpleVelShader = 0;
 	GLuint m_Lecture6Shader = 0;
+	GLuint m_Lecture7Shader = 0;
 
 };
 

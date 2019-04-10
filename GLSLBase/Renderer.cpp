@@ -25,6 +25,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	m_SimpleVelShader = CompileShaders("./Shaders/SimpleVel.vs", "./Shaders/SimpleVel.fs");
 	m_Lecture6Shader = CompileShaders("./Shaders/Lecture3_5.vs", "./Shaders/Lecture3_5.fs");
+	m_Lecture7Shader = CompileShaders("./Shaders/Lecture4.vs", "./Shaders/Lecture4.fs");
 	
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -34,20 +35,19 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 
 void Renderer::CreateVertexBufferObjects()
 {
-	float size = 0.05f;
+	float size = -0.5f;
 	float rect[]
 		=
 	{
-		// x, y, z, w
-		-size, -size, 0.f, 0.5f,
-		-size, size, 0.f, 0.5f,
-		size, size, 0.f, 0.5f //Triangle1
+		// x, y, z, value, u, v
+		-size, -size, 0.f, 0.5f, 1.f, 1.f, 
+		-size, size, 0.f, 0.5f, 1.f, 0.f,
+		size, size, 0.f, 0.5f, 0.f, 0.f,//Triangle1
 		
-		-size, -size, 0.f, 0.5f,
-		size, size, 0.f, 0.5f,
-		size, -size, 0.f, 0.5f,//Triangle2
+		-size, -size, 0.f, 0.5f, 1.f, 1.f,
+		size, size, 0.f, 0.5f, 0.f, 0.f,
+		size, -size, 0.f, 0.5f, 0.f, 1.f,//Triangle2
 
-//		0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 0.f,
 	}; // ARRAY 형태로 만들었당
 
 
@@ -715,4 +715,26 @@ void Renderer::Lecture6() {
 	glDisableVertexAttribArray(aTime);
 	glDisableVertexAttribArray(aValue);
 	glDisableVertexAttribArray(aColor);
+}
+
+void Renderer::Lecture7() {
+	GLuint shader = m_Lecture7Shader;
+	glUseProgram(shader);
+
+	GLuint aPos = glGetAttribLocation(shader, "a_Position");
+	GLuint aUV = glGetAttribLocation(shader, "a_UV");
+
+	glEnableVertexAttribArray(aPos);
+	glEnableVertexAttribArray(aUV);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
+
+	glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+	glVertexAttribPointer(aUV, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (GLvoid*)(sizeof(float) * 4));
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glDisableVertexAttribArray(aPos);
+	glDisableVertexAttribArray(aUV);
+
 }
