@@ -5,6 +5,9 @@ layout(location=0) out vec4 FragColor;
 in vec3 v_Position;
 in vec2 v_UV;
 
+// uniform vec2 u_EnemyPoints[5];
+const vec2 c_EnemyPoints[5] = {vec2(0.f, 0.f), vec2(0.5f, 0.5f), vec2(0.25f, -0.25f), vec2(-0.2f, -0.3f), vec2(0.3f, -0.4f)};
+
 void main()
 {
 	vec3 newColor;
@@ -12,12 +15,19 @@ void main()
 	newColor.g = v_Position.y;
 	newColor.b = 0;
 
-	float distance = sqrt(v_Position.x * v_Position.x + v_Position.y * v_Position.y);
+	vec2 newUV = v_UV - vec2(0.5, 0.5); // -0.5 ~ 0.5 사이의 값을 가진다.
 
+	float enemyPoint = 0;
 
-	vec2 newUV = v_UV - vec2(0.5, 0.5);
-	float grey = sin(distance * 3.141592 * 4 * 4); // 거리, PI, ?, 주기
+	for(int i = 0; i < 5; ++i) {
+		vec2 newPoint = c_EnemyPoints[i];
+		vec2 newVec = newPoint - newUV; // 적 위치 - 내 위치
+		float distance = sqrt(newVec.x * newVec.x + newVec.y * newVec.y);
 
-	FragColor = vec4(grey);
-
+		if(distance < 0.01) {
+			enemyPoint += 0.5f;
+		}
+	}
+	
+	FragColor = vec4(enemyPoint);
 } 

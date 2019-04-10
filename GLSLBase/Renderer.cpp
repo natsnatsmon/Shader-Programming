@@ -721,6 +721,8 @@ void Renderer::Lecture7() {
 	GLuint shader = m_Lecture7Shader;
 	glUseProgram(shader);
 
+//	GLuint uEnemyPoint = glGetUniformLocation(m_Lecture7Shader, "u_EnemyPoint");
+	
 	GLuint aPos = glGetAttribLocation(shader, "a_Position");
 	GLuint aUV = glGetAttribLocation(shader, "a_UV");
 
