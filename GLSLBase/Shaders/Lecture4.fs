@@ -14,12 +14,8 @@ void main()
 
 	float distance = sqrt(v_Position.x * v_Position.x + v_Position.y * v_Position.y);
 
-	if(distance < 0.5f && distance >= 0.49f) {
-		FragColor = vec4(newColor.rgb, 1);
-	
-	}
-	else {
-			FragColor = vec4(0, 0, 0, 0);
 
-	}
+	// UV
+	FragColor = vec4(v_UV.xy, 0, 1);
+	FragColor = vec4(v_Position.xy + vec2(0.5, 0.5), 0, 1); // 둘 다 같은 결과
 }
