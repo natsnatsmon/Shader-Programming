@@ -28,6 +28,7 @@ public:
 	void Lecture6();
 	void Lecture7();
 
+	void FillBG(float alpha);
 
 	void GenQuadsVBO(int count);
 	void CreateGridMesh();
@@ -62,6 +63,6 @@ private:
 	GLuint m_SimpleVelShader = 0;
 	GLuint m_Lecture6Shader = 0;
 	GLuint m_Lecture7Shader = 0;
-
+	GLuint m_FillBGShader = 0;
 };
 

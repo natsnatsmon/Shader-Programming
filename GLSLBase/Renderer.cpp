@@ -26,6 +26,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_SimpleVelShader = CompileShaders("./Shaders/SimpleVel.vs", "./Shaders/SimpleVel.fs");
 	m_Lecture6Shader = CompileShaders("./Shaders/Lecture3_5.vs", "./Shaders/Lecture3_5.fs");
 	m_Lecture7Shader = CompileShaders("./Shaders/Lecture4.vs", "./Shaders/Lecture4.fs");
+	m_FillBGShader = CompileShaders("./Shaders/FillBG.vs", "./Shaders/FillBG.fs");
 	
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -35,7 +36,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 
 void Renderer::CreateVertexBufferObjects()
 {
-	float size = -0.5f;
+	float size = 1.f;
 	float rect[]
 		=
 	{
@@ -717,11 +718,23 @@ void Renderer::Lecture6() {
 	glDisableVertexAttribArray(aColor);
 }
 
+float time_lec7 = 0.f;
 void Renderer::Lecture7() {
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	GLuint shader = m_Lecture7Shader;
 	glUseProgram(shader);
 
-//	GLuint uEnemyPoint = glGetUniformLocation(m_Lecture7Shader, "u_EnemyPoint");
+	GLuint uTime = glGetUniformLocation(shader, "u_Time");
+	glUniform1f(uTime, time_lec7);
+
+	time_lec7 += 0.0001f;
+	
+	GLfloat enemyPoints[] = { 0.f, 0.f, 0.5f, 0.5f, 0.25f, -0.25f, -0.2f, -0.3f, 0.3f, -0.4f };
+	GLfloat uPoints = glGetUniformLocation(shader, "u_EnemyPoints");
+	glUniform2fv(uPoints, 5, enemyPoints); // uniform 형식으로 주려면 uniform의 location, counts, source 순으로~
 	
 	GLuint aPos = glGetAttribLocation(shader, "a_Position");
 	GLuint aUV = glGetAttribLocation(shader, "a_UV");
@@ -739,4 +752,24 @@ void Renderer::Lecture7() {
 	glDisableVertexAttribArray(aPos);
 	glDisableVertexAttribArray(aUV);
 
+}
+
+void Renderer::FillBG(float alpha) {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	GLuint shader = m_FillBGShader;
+	glUseProgram(shader);
+
+	GLuint aPos = glGetAttribLocation(shader, "a_Position");
+
+	glEnableVertexAttribArray(aPos);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
+	
+	glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glDisableVertexAttribArray(aPos);
 }

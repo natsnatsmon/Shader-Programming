@@ -49,7 +49,7 @@ void main()
 
 		newAlpha = pow(1 - newTime / lifeTime, 1);
 
-//		newPos = newPos + vSin * sin(newTime * pi * 2 * ratio) * amp;
+		newPos = newPos + vSin * sin(newTime * pi * 2 * ratio) * amp;
 	} 
 	else {
 		newPos = vec3(10000, 10000, 10000);
