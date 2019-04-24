@@ -22,13 +22,13 @@ int g_WindowSizeY = 500;
 
 void RenderScene(void)
 {
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.f);
 
 	// Renderer Test
 //	g_Renderer->Test();
-	g_Renderer->Lecture7();
-	g_Renderer->FillBG(0.2);
+	g_Renderer->Lecture9(1);
+//	g_Renderer->FillBG(0.05);
 
 
 	glutSwapBuffers();

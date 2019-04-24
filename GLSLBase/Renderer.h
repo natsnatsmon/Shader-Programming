@@ -27,6 +27,8 @@ public:
 	void Lecture5();
 	void Lecture6();
 	void Lecture7();
+	void Lecture8();
+	void Lecture9(GLuint tex);
 
 	void FillBG(float alpha);
 
@@ -48,6 +50,7 @@ private:
 	unsigned int m_WindowSizeY = 0;
 
 	GLuint m_VBORect = 0;
+	GLuint m_VBORectTex = 0;
 	
 	GLuint m_VBOLecture = 0;
 	GLuint m_VBOQuads = 0;
@@ -64,5 +67,10 @@ private:
 	GLuint m_Lecture6Shader = 0;
 	GLuint m_Lecture7Shader = 0;
 	GLuint m_FillBGShader = 0;
+	GLuint m_TextureShader = 0;
+
+
+	// Textures
+	GLuint m_Lecture8Texture = 0;
 };
 
