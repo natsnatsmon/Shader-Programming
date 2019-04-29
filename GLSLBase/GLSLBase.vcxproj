@@ -179,8 +179,10 @@
     <None Include="Shaders\Lecture3_5.vs" />
     <None Include="Shaders\Lecture4.fs" />
     <None Include="Shaders\Lecture4.vs" />
-    <None Include="Shaders\Lecture6Texture.fs" />
-    <None Include="Shaders\Lecture6Texture.vs" />
+    <None Include="Shaders\Lecture6Frag.fs" />
+    <None Include="Shaders\Lecture6Frag.vs" />
+    <None Include="Shaders\Lecture8Texture.fs" />
+    <None Include="Shaders\Lecture8Texture.vs" />
     <None Include="Shaders\SimpleVel.fs" />
     <None Include="Shaders\SimpleVel.vs" />
     <None Include="Shaders\SolidRect.fs" />

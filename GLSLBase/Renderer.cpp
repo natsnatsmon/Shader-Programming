@@ -26,21 +26,23 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	//m_SimpleVelShader = CompileShaders("./Shaders/SimpleVel.vs", "./Shaders/SimpleVel.fs");
 	//m_Lecture6Shader = CompileShaders("./Shaders/Lecture3_5.vs", "./Shaders/Lecture3_5.fs");
 	//m_Lecture7Shader = CompileShaders("./Shaders/Lecture4.vs", "./Shaders/Lecture4.fs");
-	//m_FillBGShader = CompileShaders("./Shaders/FillBG.vs", "./Shaders/FillBG.fs");
-	m_TextureShader = CompileShaders("./Shaders/Lecture6Texture.vs", "./Shaders/Lecture6Texture.fs");
+	m_FillBGShader = CompileShaders("./Shaders/FillBG.vs", "./Shaders/FillBG.fs");
+	m_FragShader = CompileShaders("./Shaders/Lecture6Frag.vs", "./Shaders/Lecture6Frag.fs");
+	m_TextureShader = CompileShaders("./Shaders/Lecture8Texture.vs", "./Shaders/Lecture8Texture.fs");
 
 	// Load Textures
-	m_Lecture8Texture = CreatePngTexture("./Textures/comet.png");
+	m_CheckerboardTexture = CreatePngTexture("./Textures/comet.png");
 
 	//Create VBOs
 	CreateVertexBufferObjects();
 	GenQuadsVBO(100000);
+	CreateTextureTile();
 //	CreateGridMesh();
 }
 
 void Renderer::CreateVertexBufferObjects()
 {
-	float size = 0.5f;
+	float size = 1.f;
 	float rect[]
 		=
 	{
@@ -343,6 +345,30 @@ void Renderer::CreateGridMesh()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*(pointCountX - 1)*(pointCountY - 1) * 2 * 3 * 3, vertices, GL_STATIC_DRAW);
 }
 
+void Renderer::CreateTextureTile() {
+	static const GLulong checkerboard[] =
+	{
+	0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000,
+	0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF,
+	0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000,
+	0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF,
+	0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000,
+	0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF,
+	0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000,
+	0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF
+	};
+
+	glGenTextures(1, &m_CheckerboardTexture);
+	glBindTexture(GL_TEXTURE_2D, m_CheckerboardTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+		8, 8, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+		checkerboard);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
 void Renderer::AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType)
 {
 	//쉐이더 오브젝트 생성
@@ -563,7 +589,7 @@ GLuint Renderer::CreateBmpTexture(char * filePath)
 	glBindTexture(GL_TEXTURE_2D, temp);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bmp);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bmp);
 
 	return temp;
 }
@@ -799,57 +825,43 @@ void Renderer::FillBG(float alpha) {
 	glDisableVertexAttribArray(aPos);
 }
 
+float time_lec8 = 0.f;
 void Renderer::Lecture8() {
 
-	// 알파 블렌딩을 켜는 API
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-
-	GLuint shader = m_Lecture6Shader;
+	GLuint shader = m_TextureShader;
 	glUseProgram(shader);
 
 
 	GLuint uTime = glGetUniformLocation(shader, "u_Time");
-	glUniform1f(uTime, time_lec4);
+	glUniform1f(uTime, time_lec8);
+	time_lec8 += 0.0001f;
 
-	time_lec4 += 0.005f;
-
-
+	GLuint uTex = glGetUniformLocation(shader, "u_Texture");
+	glUniform1i(uTex, 0); // 0번에 바인드 했다..!
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_CheckerboardTexture);
 
 	GLuint aPos = glGetAttribLocation(shader, "a_Position");
-	GLuint aVel = glGetAttribLocation(shader, "a_Velocity");
-	GLuint aTime = glGetAttribLocation(shader, "a_Time");
-	GLuint aValue = glGetAttribLocation(shader, "a_Value");
-	GLuint aColor = glGetAttribLocation(shader, "a_Color");
+	GLuint aTex = glGetAttribLocation(shader, "a_TexPos");
 
 	glEnableVertexAttribArray(aPos);
-	glEnableVertexAttribArray(aVel);
-	glEnableVertexAttribArray(aTime);
-	glEnableVertexAttribArray(aValue);
-	glEnableVertexAttribArray(aColor);
+	glEnableVertexAttribArray(aTex);
 
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOQuads);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORectTex);
 
 	// (0x, 1y, 2z, 3vx, 4vy, 5vz, 6st, 7lt, 8x, 9y ... )
-	glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 15, 0);
-	glVertexAttribPointer(aVel, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (GLvoid*)(sizeof(float) * 3));
-	glVertexAttribPointer(aTime, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (GLvoid*)(sizeof(float) * 6));
-	glVertexAttribPointer(aValue, 1, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (GLvoid*)(sizeof(float) * 10));
-	glVertexAttribPointer(aColor, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 15, (GLvoid*)(sizeof(float) * 11));
+	glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+	glVertexAttribPointer(aTex, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (GLvoid*)(sizeof(float) * 4));
 
-	glDrawArrays(GL_TRIANGLES, 0, m_VBOQuads_vertexCount);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glDisableVertexAttribArray(aPos);
-	glDisableVertexAttribArray(aVel);
-	glDisableVertexAttribArray(aTime);
-	glDisableVertexAttribArray(aValue);
-	glDisableVertexAttribArray(aColor);
+	glDisableVertexAttribArray(aTex);
 }
 
 float time_lec9 = 0;
 void Renderer::Lecture9(GLuint tex) {
-	GLuint shader = m_TextureShader;
+	GLuint shader = m_FragShader;
 	glUseProgram(shader);
 
 	time_lec9 += 0.001f;

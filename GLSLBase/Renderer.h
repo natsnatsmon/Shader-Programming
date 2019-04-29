@@ -34,7 +34,7 @@ public:
 
 	void GenQuadsVBO(int count);
 	void CreateGridMesh();
-
+	void CreateTextureTile();
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -68,9 +68,10 @@ private:
 	GLuint m_Lecture7Shader = 0;
 	GLuint m_FillBGShader = 0;
 	GLuint m_TextureShader = 0;
+	GLuint m_FragShader = 0;
 
 
 	// Textures
-	GLuint m_Lecture8Texture = 0;
+	GLuint m_CheckerboardTexture = 0;
 };
 

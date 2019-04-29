@@ -59,10 +59,16 @@
     <None Include="Shaders\FillBG.vs">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shaders\Lecture6Texture.fs">
+    <None Include="Shaders\Lecture6Frag.vs">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shaders\Lecture6Texture.vs">
+    <None Include="Shaders\Lecture6Frag.fs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\Lecture8Texture.fs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\Lecture8Texture.vs">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

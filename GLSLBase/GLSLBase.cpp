@@ -27,7 +27,7 @@ void RenderScene(void)
 
 	// Renderer Test
 //	g_Renderer->Test();
-	g_Renderer->Lecture9(1);
+	g_Renderer->Lecture8();
 //	g_Renderer->FillBG(0.05);
 
 
