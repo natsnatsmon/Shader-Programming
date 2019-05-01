@@ -73,5 +73,6 @@ private:
 
 	// Textures
 	GLuint m_CheckerboardTexture = 0;
+	GLuint m_CometTexture = 0;
 };
 

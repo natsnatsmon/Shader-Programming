@@ -31,7 +31,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_TextureShader = CompileShaders("./Shaders/Lecture8Texture.vs", "./Shaders/Lecture8Texture.fs");
 
 	// Load Textures
-	m_CheckerboardTexture = CreatePngTexture("./Textures/comet.png");
+	m_CometTexture = CreatePngTexture("./Textures/comet.png");
 
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -839,7 +839,7 @@ void Renderer::Lecture8() {
 	GLuint uTex = glGetUniformLocation(shader, "u_Texture");
 	glUniform1i(uTex, 0); // 0번에 바인드 했다..!
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_CheckerboardTexture);
+	glBindTexture(GL_TEXTURE_2D, m_CometTexture);
 
 	GLuint aPos = glGetAttribLocation(shader, "a_Position");
 	GLuint aTex = glGetAttribLocation(shader, "a_TexPos");
