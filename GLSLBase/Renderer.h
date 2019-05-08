@@ -29,12 +29,14 @@ public:
 	void Lecture7();
 	void Lecture8();
 	void Lecture9(GLuint tex);
+	void Lecture10();
 
 	void FillBG(float alpha);
 
 	void GenQuadsVBO(int count);
 	void CreateGridMesh();
 	void CreateTextureTile();
+	void CreateTexture();
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -74,5 +76,6 @@ private:
 	// Textures
 	GLuint m_CheckerboardTexture = 0;
 	GLuint m_CometTexture = 0;
+	GLuint m_SmileTexture = 0;
 };
 

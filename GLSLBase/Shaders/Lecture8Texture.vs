@@ -2,7 +2,8 @@
 
 in vec3 a_Position;
 in vec2 a_TexPos;
-in vec3 a_Color;
+
+uniform int u_TexSampler;
 
 out vec2 v_TexPos;
 

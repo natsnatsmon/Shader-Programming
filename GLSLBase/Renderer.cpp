@@ -37,6 +37,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	CreateVertexBufferObjects();
 	GenQuadsVBO(100000);
 	CreateTextureTile();
+	CreateTexture();
 //	CreateGridMesh();
 }
 
@@ -368,6 +369,31 @@ void Renderer::CreateTextureTile() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
+
+void Renderer::CreateTexture() {
+	GLulong textureSmile[]
+		=
+	{
+	  0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	  0xFFFFFFFF, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFFFFFFFF,
+	  0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00, 0xFF00FF00,
+	  0xFF00FF00, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFF00FF00,
+	  0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
+	  0xFF0000FF, 0xFF0000FF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFF0000, 0xFFFF0000,
+	  0xFF0000FF, 0xFF0000FF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFF0000, 0xFFFF0000,
+	  0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
+	};
+
+	glGenTextures(1, &m_SmileTexture);  // ID만 생성
+	glBindTexture(GL_TEXTURE_2D, m_SmileTexture);  // 요 아이디는 2차원 텍스쳐로 사용할 것이다.. 라고 명시해주는 거
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 8, 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureSmile);  // 채널당 비트수, RGPA 순서 그런거.. 세팅하고 GPU에 실제적으로 올려주는 API~~!!!!!~!~!
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);  // 샘플링 하는 방식
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
 }
 void Renderer::AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType)
 {
@@ -883,4 +909,34 @@ void Renderer::Lecture9(GLuint tex) {
 
 	glDisableVertexAttribArray(aPos);
 	glDisableVertexAttribArray(aTex);
+}
+
+void Renderer::Lecture10() {
+	GLuint shader = m_TextureShader;
+	glUseProgram(shader);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_SmileTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_CometTexture);
+
+
+
+	int uniformTex = glGetUniformLocation(shader, "u_TexSampler");
+	glUniform1i(uniformTex, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_SmileTexture);
+
+	int aPosition = glGetAttribLocation(shader, "a_Position");
+	int aTexPos = glGetAttribLocation(shader, "a_TexPos");
+
+	glEnableVertexAttribArray(aPosition);
+	glEnableVertexAttribArray(aTexPos);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORectTex);
+	glVertexAttribPointer(aPosition, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+	glVertexAttribPointer(aTexPos, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (GLvoid*)(4 * sizeof(float)));
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
 }
