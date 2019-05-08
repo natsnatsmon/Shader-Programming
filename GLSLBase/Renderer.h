@@ -76,6 +76,9 @@ private:
 	// Textures
 	GLuint m_CheckerboardTexture = 0;
 	GLuint m_CometTexture = 0;
-	GLuint m_SmileTexture = 0;
+	GLuint m_SmileTexture0 = 0;
+	GLuint m_SmileTexture1 = 0;
+	GLuint m_SmileTexture2 = 0;
+	GLuint m_SmileTexture3 = 0;
 };
 
