@@ -29,7 +29,7 @@ public:
 	void Lecture7();
 	void Lecture8();
 	void Lecture9(GLuint tex);
-	void Lecture10();
+	void Lecture10(int * num);
 
 	void FillBG(float alpha);
 

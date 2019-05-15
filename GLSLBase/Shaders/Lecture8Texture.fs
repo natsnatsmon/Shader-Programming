@@ -4,19 +4,19 @@ in vec2 v_TexPos;
 out vec4 FragColor;
 
 uniform float u_Time;
-uniform sampler2D u_aniTexSampler;
-uniform sampler2D u_TexSampler0;
-uniform sampler2D u_TexSampler1;
-uniform sampler2D u_TexSampler2;
-uniform sampler2D u_TexSampler3;
 
+uniform int u_number[3]; // 3 digits
+uniform sampler2D u_aniTexSampler;
 void main()
 {
 	vec4 newColor;
-	//vec2 newTex = vec2(v_TexPos.x, 1.0-v_TexPos.y);
+	int newIndex = int(floor(v_TexPos.x*3.0));
+	// float newy = 9.0 - float(u_number[1]);
 	vec2 newTex = v_TexPos;
+	float newy = 5.0 - float(u_number[newIndex]);
 
-	newTex.y = newTex.y/6.0 + u_Time/6.0;
+	newTex.x = fract(newTex.x * 3);
+	newTex.y = newTex.y/6.0 + newy/6.0;
 	
 	newColor = texture(u_aniTexSampler, newTex);
 	FragColor = vec4(newColor);

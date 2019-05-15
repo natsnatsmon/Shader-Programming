@@ -27,7 +27,8 @@ void RenderScene(void)
 
 	// Renderer Test
 //	g_Renderer->Test();
-	g_Renderer->Lecture10();
+	int num[3] = { 5, 4, 0 };
+	g_Renderer->Lecture10(num);
 	Sleep(1000);
 //	g_Renderer->FillBG(0.05);
 

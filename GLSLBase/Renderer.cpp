@@ -1040,10 +1040,12 @@ void Renderer::Lecture9(GLuint tex) {
 }
 
 float g_TimeStamp = 0.f;
-void Renderer::Lecture10() {
+void Renderer::Lecture10(int * number) {
 	GLuint shader = m_TextureShader;
 	glUseProgram(shader);
 
+	GLuint uNumber = glGetUniformLocation(shader, "u_number");
+	glUniform1iv(uNumber, 3, number);
 
 	/*
 	int uniformTex0 = glGetUniformLocation(shader, "u_TexSampler0");
