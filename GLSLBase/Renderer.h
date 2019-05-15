@@ -80,5 +80,6 @@ private:
 	GLuint m_SmileTexture1 = 0;
 	GLuint m_SmileTexture2 = 0;
 	GLuint m_SmileTexture3 = 0;
+	GLuint m_SmileSadTexture = 0;
 };
 
