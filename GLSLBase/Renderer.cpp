@@ -29,21 +29,23 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_FillBGShader = CompileShaders("./Shaders/FillBG.vs", "./Shaders/FillBG.fs");
 	m_FragShader = CompileShaders("./Shaders/Lecture6Frag.vs", "./Shaders/Lecture6Frag.fs");
 	m_TextureShader = CompileShaders("./Shaders/Lecture8Texture.vs", "./Shaders/Lecture8Texture.fs");
+	m_SpriteAnimShader = CompileShaders("./Shaders/SpriteAnim.vs", "./Shaders/SpriteAnim.fs");
 
 	// Load Textures
 	m_CometTexture = CreatePngTexture("./Textures/comet.png");
+	m_SpriteAnimTexture = CreatePngTexture("./Textures/cutesprite.png");
 
 	//Create VBOs
 	CreateVertexBufferObjects();
 	GenQuadsVBO(100000);
 	CreateTextureTile();
 	CreateTexture();
-//	CreateGridMesh();
+	CreateGridMesh();
 }
 
 void Renderer::CreateVertexBufferObjects()
 {
-	float size = 1.f;
+	float size = 0.25f;
 	float rect[]
 		=
 	{
@@ -1081,6 +1083,51 @@ void Renderer::Lecture10(int * number) {
 	float uTime = glGetUniformLocation(shader, "u_Time");
 	glUniform1f(uTime, g_TimeStamp);
 	
+
+	int aPosition = glGetAttribLocation(shader, "a_Position");
+	int aTexPos = glGetAttribLocation(shader, "a_TexPos");
+
+	glEnableVertexAttribArray(aPosition);
+	glEnableVertexAttribArray(aTexPos);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORectTex);
+	glVertexAttribPointer(aPosition, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+	glVertexAttribPointer(aTexPos, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (GLvoid*)(4 * sizeof(float)));
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glDisableVertexAttribArray(aPosition);
+	glDisableVertexAttribArray(aTexPos);
+
+}
+
+float g_Time = 0.f;
+void Renderer::LecSpriteAnim(float num) {
+	GLuint shader = m_SpriteAnimShader;
+	glUseProgram(shader);
+
+	//GLuint uNumber = glGetUniformLocation(shader, "u_number");
+	//glUniform1iv(uNumber, 3, number);
+
+	int uniformAnimTex = glGetUniformLocation(shader, "u_animTexture");
+	glUniform1i(uniformAnimTex, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_SpriteAnimTexture);
+
+	g_TimeStamp += 1.f;
+	if (g_TimeStamp > 5.f)
+		g_TimeStamp = 0.f;
+
+	float uTime = glGetUniformLocation(shader, "u_Time");
+	glUniform1f(uTime, g_TimeStamp);
+
+	int uResolX = glGetUniformLocation(shader, "u_resolX");
+	glUniform1f(uResolX, 12.f);
+	int uResolY = glGetUniformLocation(shader, "u_resolY");
+	glUniform1f(uResolY, 8.f);
+	
+	int uNum = glGetUniformLocation(shader, "u_number");
+	glUniform1f(uNum, num);
 
 	int aPosition = glGetAttribLocation(shader, "a_Position");
 	int aTexPos = glGetAttribLocation(shader, "a_TexPos");

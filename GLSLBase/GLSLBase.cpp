@@ -27,11 +27,16 @@ void RenderScene(void)
 
 	// Renderer Test
 //	g_Renderer->Test();
-	int num[3] = { 5, 4, 0 };
-	g_Renderer->Lecture10(num);
-	Sleep(1000);
+	//int num[3] = { 5, 4, 0 };
+	//g_Renderer->Lecture10(num);
+	static float g_animNum = 0.f;
+	g_animNum = g_animNum + 1.f;
+	if (g_animNum >= 96.f) {
+		g_animNum = 0.f;
+	}
+	g_Renderer->LecSpriteAnim(g_animNum);
+	Sleep(100);
 //	g_Renderer->FillBG(0.05);
-
 
 	glutSwapBuffers();
 }
