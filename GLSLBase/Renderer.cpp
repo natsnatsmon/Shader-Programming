@@ -30,6 +30,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_FragShader = CompileShaders("./Shaders/Lecture6Frag.vs", "./Shaders/Lecture6Frag.fs");
 	m_TextureShader = CompileShaders("./Shaders/Lecture8Texture.vs", "./Shaders/Lecture8Texture.fs");
 	m_SpriteAnimShader = CompileShaders("./Shaders/SpriteAnim.vs", "./Shaders/SpriteAnim.fs");
+	m_VSSandBoxShader = CompileShaders("./Shaders/VSSandBox.vs", "./Shaders/VSSandBox.fs");
 
 	// Load Textures
 	m_CometTexture = CreatePngTexture("./Textures/comet.png");
@@ -806,7 +807,7 @@ void Renderer::Lecture3() {
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOGridMesh);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
-	glDrawArrays(GL_LINES, 0, m_VBOGridMesh_Count);
+	glDrawArrays(GL_LINE_LOOP, 0, m_VBOGridMesh_Count);
 
 	glDisableVertexAttribArray(0);
 }
@@ -1144,4 +1145,25 @@ void Renderer::LecSpriteAnim(float num) {
 	glDisableVertexAttribArray(aPosition);
 	glDisableVertexAttribArray(aTexPos);
 
+}
+
+void Renderer::LecVSSandBox()
+{
+	GLuint shader = m_VSSandBoxShader;
+	glUseProgram(shader);
+
+	static float gTime = 0; gTime += 0.0001f;
+	float uTime = glGetUniformLocation(shader, "u_Time");
+	glUniform1f(uTime, gTime);
+
+
+	int aPosition = glGetAttribLocation(shader, "a_Position");
+
+	glEnableVertexAttribArray(aPosition);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOGridMesh);
+	glVertexAttribPointer(aPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+	glDrawArrays(GL_LINES, 0, m_VBOGridMesh_Count);
+
+	glDisableVertexAttribArray(aPosition);
 }

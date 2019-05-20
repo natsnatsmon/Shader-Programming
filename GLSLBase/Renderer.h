@@ -31,6 +31,7 @@ public:
 	void Lecture9(GLuint tex);
 	void Lecture10(int * num);
 	void LecSpriteAnim(float num);
+	void LecVSSandBox();
 
 	void FillBG(float alpha);
 
@@ -73,6 +74,7 @@ private:
 	GLuint m_TextureShader = 0;
 	GLuint m_FragShader = 0;
 	GLuint m_SpriteAnimShader = 0;
+	GLuint m_VSSandBoxShader = 0;
 
 	// Textures
 	GLuint m_CheckerboardTexture = 0;

@@ -77,6 +77,12 @@
     <None Include="Shaders\SpriteAnim.fs">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shaders\VSSandBox.fs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\VSSandBox.vs">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="note.txt" />
