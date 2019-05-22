@@ -1169,4 +1169,5 @@ void Renderer::LecVSSandBox()
 	glDrawArrays(GL_TRIANGLES, 0, m_VBOGridMesh_Count);
 
 	glDisableVertexAttribArray(aPosition);
+
 }

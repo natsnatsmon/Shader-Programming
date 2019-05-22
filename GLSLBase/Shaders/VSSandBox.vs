@@ -2,10 +2,10 @@
 
 in vec3 a_Position;
 out float v_Grey;
+out vec2 v_Tex;
 
 uniform float u_Time;
 uniform float u_Color;
-uniform float u_RandNum;
 
 const float PI = 3.141592;
 
@@ -21,7 +21,7 @@ void main()
 	float weightY = newPos.y + 0.5;
 
 	// period :: 1 ~ 2.8 (곱하기는 주기가 몇번 돌게할건지)
-	float periodX = 1.0 + (1.0 - weightY) * 0.5;
+	float periodX = 1.0 + (1.0 - weightX) * 0.5;
 	float periodY = 1.0 + weightX * 0.5;
 
 	// value :: 0 ~ 2PI
@@ -37,10 +37,12 @@ void main()
 	newPos.x = newPos.x - sinValueX * weightX;
 
 	// y
-	newPos.y = (newPos.y * (1.0-(weightX * 0.3))) + sinValueY * weightX;
+	newPos.y = (newPos.y * (1.0-(weightX * 0.5))) + sinValueY * weightX;
 
 	v_Grey = sinValueY + 0.5;
 
+	// v_Tex :: 0 ~ 1
+	v_Tex = vec2(0.5, 0.5) + a_Position.xy;
 
 	gl_Position = vec4(newPos, 1);
 }
