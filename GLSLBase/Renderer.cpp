@@ -1156,6 +1156,9 @@ void Renderer::LecVSSandBox()
 	float uTime = glGetUniformLocation(shader, "u_Time");
 	glUniform1f(uTime, gTime);
 
+	float randNum = (rand() % 10) * 0.01;
+	float uRandNum = glGetUniformLocation(shader, "u_RandNum");
+	glUniform1f(uRandNum, randNum);
 
 	int aPosition = glGetAttribLocation(shader, "a_Position");
 
