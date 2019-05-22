@@ -1152,7 +1152,7 @@ void Renderer::LecVSSandBox()
 	GLuint shader = m_VSSandBoxShader;
 	glUseProgram(shader);
 
-	static float gTime = 0; gTime += 0.0001f;
+	static float gTime = 0; gTime += 0.005f;
 	float uTime = glGetUniformLocation(shader, "u_Time");
 	glUniform1f(uTime, gTime);
 
@@ -1163,7 +1163,7 @@ void Renderer::LecVSSandBox()
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOGridMesh);
 	glVertexAttribPointer(aPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
-	glDrawArrays(GL_LINES, 0, m_VBOGridMesh_Count);
+	glDrawArrays(GL_TRIANGLES, 0, m_VBOGridMesh_Count);
 
 	glDisableVertexAttribArray(aPosition);
 }
